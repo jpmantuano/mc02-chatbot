@@ -2,9 +2,9 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-# nltk.download('stopwords')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('punkt')
+#nltk.download('stopwords')
+#nltk.download('averaged_perceptron_tagger')
+#nltk.download('punkt')
 
 stop_words = set(stopwords.words('english'))
 
