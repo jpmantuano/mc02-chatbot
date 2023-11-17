@@ -1,6 +1,7 @@
 # main_script.py
-from pyswip import Prolog
-from question_converter import question_to_prolog, question_answer_converter
+from pyswip import *
+from question_converter import *
+from statement_converter import  *
 
 def load_prolog_file(file_path):
     prolog = Prolog()
@@ -17,6 +18,7 @@ if __name__ == "__main__":
 
     # Load the Prolog file
     prolog_file = load_prolog_file(prolog_file_path)
+    
 
     while True:
         # User input for the question
@@ -28,8 +30,8 @@ if __name__ == "__main__":
 
         #This code block detects if a user_input is a question or a statement through a question mark
         if '?' in user_input:
-            # Convert the user's question to a Prolog query
-            prolog_query = question_to_prolog(user_input)
+            
+            prolog_query = question_to_prolog(user_input) # Convert the user's question to a Prolog query
             
             #Validate if this is a valid question
             if prolog_query == False:
@@ -37,17 +39,30 @@ if __name__ == "__main__":
             else:
                 # Perform the user's query
                 question_result = query_prolog_file(prolog_file, prolog_query)
+                if question_result == []:
+                    print("Name/s is not yet in the knowledge base")
+                    continue
                 question_answer = question_answer_converter(question_result,user_input)
-                # Display user's query resultAre Amy and Jack the parents of Alex?
+                
+                # Display user's query result
                 print("\nUser's Query Results:")
                 for solution in question_result:
                     print(solution)
-                print(f"Prolog Query: {prolog_query}")
                 print(question_answer)
+
         else:
-            print('this is a statement')
-            #code that converts the statement into a Prolog Fact
-            #code that writes the Prolog Fact into the prolog database
+            prolog_fact = statement_to_prolog(user_input) # Convert the user's statement to a Prolog Fact
+
+            #Validate if this is a valid statement
+            if prolog_fact == False:
+                print("Invaid Format")
+            else:
+                # Add the fact into the knowledge base
+                for fact in prolog_fact:
+                    prolog_file.assertz(fact)
+                print(user_input + " is added to the knowledge base.")
+
+
         
 
 

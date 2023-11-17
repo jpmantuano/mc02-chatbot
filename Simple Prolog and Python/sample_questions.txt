@@ -1,2 +1,11 @@
+Questions:
+Who are the parents of Bobby?
+Who is the father of Bobby?
+Who is the mother of Bobby?
 Who are the parents of Alex?
 Are Amy and Jack the parents of Alex?
+
+Statement:
+Jacky is the father of Bobby.
+Jasminez is the mother of Bobby.
+

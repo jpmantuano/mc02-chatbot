@@ -61,6 +61,13 @@ female(carol).
 female(ashley).
 female(chelsea).
 
+
+/* dynamic rules  */
+
+:- dynamic father/2.
+:- dynamic mother/2.
+:- dynamic parent/2.
+
 /* rules */
 
 mother(X, Y) :-
