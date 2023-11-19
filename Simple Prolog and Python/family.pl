@@ -64,9 +64,19 @@ female(chelsea).
 
 /* dynamic rules  */
 
+:- dynamic parent/2.
 :- dynamic father/2.
 :- dynamic mother/2.
-:- dynamic parent/2.
+:- dynamic sibling/2.
+:- dynamic sister/2.
+:- dynamic brother/2.
+:- dynamic grandchild/2.
+:- dynamic grandmother/2.
+:- dynamic grandfather/2.
+:- dynamic child/2.
+:- dynamic daughter/2.
+
+
 
 /* rules */
 
@@ -155,18 +165,25 @@ relative(X, Y) :-
     ancestor(Z, Y).
 
 sibling(X, Y) :-
-    parent(Z, X),
-    parent(Z, Y),
-    X \= Y.
+    mother(Z, X),
+    mother(Z, Y),
+    father(W, X),
+    father(W, Y),
+    X@<Y.
+
 
 sister(X, Y) :-
     sibling(X, Y),
     female(X),
+    parent(Z, X),
+    parent(Z, Y),
     X \= Y.
 
 brother(X, Y) :-
     sibling(X, Y),
     male(X),
+    parent(Z, X),
+    parent(Z, Y),
     X \= Y.
 
 uncle(X, Y) :-
@@ -205,3 +222,4 @@ niece(X, Y) :-
     female(X);
     uncle(Y, X),
     female(X).
+
