@@ -37,6 +37,7 @@ if __name__ == "__main__":
             if prolog_query == False:
                 print("Invaid Format")
             else:
+                print(prolog_query)
                 # Perform the user's query
                 question_result = query_prolog_file(prolog_file, prolog_query)
                 if question_result == []:
@@ -57,11 +58,13 @@ if __name__ == "__main__":
             if prolog_fact == False:
                 print("Invaid Format")
             else:
+                print(prolog_fact)
                 # Add the fact into the knowledge base
                 for fact in prolog_fact:
                     if query_prolog_file(prolog_file, fact):
                         continue
                     else:
+                        print(fact)
                         prolog_file.assertz(fact)
                 print('''"''' + user_input + '''"''' + " is in the knowledge base.")
 
