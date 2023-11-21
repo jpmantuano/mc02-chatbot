@@ -5,6 +5,9 @@ from nltk.tokenize import word_tokenize
 # nltk.download('stopwords')
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('maxent_ne_chunker')
+# nltk.download('words')
 
 stop_words = set(stopwords.words('english'))
 
@@ -12,6 +15,7 @@ stop_words = set(stopwords.words('english'))
 class InputSentence:
     def __init__(self, input_sentence):
         self.question_words = ["who", "are", "is", "are", "whom", "whose"]
+        self.relationships = ["father", "mother", "son", "daughter", "sibling", "parents"]
         self.word_tokens = word_tokenize(input_sentence)
         # word_tokens = [w for w in word_tokens if not w in stop_words]
         # self.tagged_tokens = nltk.pos_tag(word_tokens)
@@ -25,3 +29,16 @@ class InputSentence:
         tokens = [w.lower() for w in tokens if w.isalpha()]
         return nltk.pos_tag(tokens)
         # return self.tagged_tokens
+
+    def get_word_chunks(self):
+        ner = []
+        for chunk in nltk.ne_chunk(nltk.pos_tag(self.word_tokens)):
+            if hasattr(chunk, 'label'):
+                entity_pair = chunk.label(), ' '.join(c[0] for c in chunk)
+                ner.append(entity_pair)
+                print(entity_pair)
+
+        return ner
+
+    def get_relationships(self):
+        return [w for w in self.word_tokens if w in self.relationships]

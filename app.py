@@ -19,6 +19,7 @@ def detect_sentence():
         token_sequence = []
         if input_sentence.is_question():
             query = Template('ffather(x, $x)')
+            print(input_sentence.get_word_chunks())
             for token in input_sentence.get_tokens():
                 token_sequence.append(token[1])
                 # if str(token[1]) == "NNP":
@@ -27,13 +28,13 @@ def detect_sentence():
             # print("-".join(token_sequence))
 
             return {"response": "sentence is a question",
-                    "tokens": input_sentence.get_tokens(),
-                    "sentence_pattern": token_sequence,
+                    "relationship": input_sentence.get_relationships(),
+                    "sentence_pattern": input_sentence.get_word_chunks(),
                     "query": query.__str__()}
         else:
             return {"response": "added to knowledge base",
-                    "tokens": input_sentence.get_tokens(),
-                    "sentence_pattern": token_sequence,
+                    "relationship": input_sentence.get_relationships(),
+                    "sentence_pattern": input_sentence.get_word_chunks(),
                     "query": query_templates.father_of}
     else:
         return {"response": "Content-Type not supported!"}
