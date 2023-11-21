@@ -1,67 +1,26 @@
-/* facts */
 
-parent(peggy, amy).
-parent(peggy, paige).
-parent(peggy, paula).
-parent(peggy, tim).
 
-parent(woody, amy).
-parent(woody, paige).
-parent(woody, paula).
-parent(woody, tim).
+/* dynamic rules  */
 
-parent(rose, dianne).
-parent(rose, dan).
-parent(rose, jack).
-parent(rose, paul).
+:- dynamic parent/2.
+:- dynamic father/2.
+:- dynamic mother/2.
+:- dynamic sibling/2.
+:- dynamic sister/2.
+:- dynamic brother/2.
+:- dynamic grandchild/2.
+:- dynamic grandmother/2.
+:- dynamic grandfather/2.
+:- dynamic child/2.
+:- dynamic daughter/2.
 
-parent(george, dianne).
-parent(george, dan).
-parent(george, jack).
-parent(george, paul).
+:- dynamic male/1.
+:- dynamic female/1.
 
-parent(amy, ginger).
-parent(amy, jackie).
-parent(amy, andrew).
-parent(amy, alex).
-
-parent(jack, ginger).
-parent(jack, jackie).
-parent(jack, andrew).
-parent(jack, alex).
-
-parent(ginger, katelyn).
-parent(zack, katelyn).
-
-parent(tim, carol).
-
-parent(carol, ashley).
-parent(carol, chelsea).
-
-male(jack).
-male(andrew).
-male(alex).
-male(woody).
-male(tim).
-male(george).
-male(dan).
-male(paul).
-male(zack).
-
-female(amy).
-female(ginger).
-female(jackie).
-female(peggy).
-female(paige).
-female(paula).
-female(rose).
-female(dianne).
-female(katelyn).
-female(carol).
-female(ashley).
-female(chelsea).
 
 /* rules */
+
+
 
 mother(X, Y) :-
     parent(X, Y),
@@ -70,6 +29,21 @@ mother(X, Y) :-
 father(X, Y) :-
     parent(X, Y),
     male(X).
+
+sibling(X, Y) :-
+    parent(Z, X),
+    parent(Z, Y),
+    X \= Y.
+
+sister(X, Y) :-
+    sibling(X, Y),
+    female(X),
+    X \= Y.
+
+brother(X, Y) :- 
+    sibling(X, Y),
+    male(X),
+    X \= Y.
 
 child(X, Y) :-
     parent(Y, X).
@@ -147,21 +121,6 @@ relative(X, Y) :-
     ancestor(Z, X),
     ancestor(Z, Y).
 
-sibling(X, Y) :-
-    parent(Z, X),
-    parent(Z, Y),
-    X \= Y.
-
-sister(X, Y) :-
-    sibling(X, Y),
-    female(X),
-    X \= Y.
-
-brother(X, Y) :-
-    sibling(X, Y),
-    male(X),
-    X \= Y.
-
 uncle(X, Y) :-
     brother(X, Z),
     child(Y, Z).
@@ -198,3 +157,4 @@ niece(X, Y) :-
     female(X);
     uncle(Y, X),
     female(X).
+
