@@ -19,23 +19,28 @@ def detect_sentence():
         token_sequence = []
         if input_sentence.is_question():
             query = Template('ffather(x, $x)')
-            print(input_sentence.get_word_chunks())
+            # print(input_sentence.get_word_chunks())
             for token in input_sentence.get_tokens():
                 token_sequence.append(token[1])
                 # if str(token[1]) == "NNP":
                 #     query.substitute(x=token[0])
 
             # print("-".join(token_sequence))
-
-            return {"response": "sentence is a question",
-                    "relationship": input_sentence.get_relationships(),
-                    "sentence_pattern": input_sentence.get_word_chunks(),
-                    "query": query.__str__()}
+            query = "f'{0}(X, {1})'".format(input_sentence.get_relationships(), input_sentence.get_word_chunks())
+            return query
+            # return f'{input_sentence.get_relationships()}(X, {input_sentence.get_word_chunks()})'
+            # return {"response": "sentence is a question",
+            #         "relationship": input_sentence.get_relationships(),
+            #         "sentence_pattern": input_sentence.get_word_chunks(),
+            #         "query": query}
         else:
-            return {"response": "added to knowledge base",
-                    "relationship": input_sentence.get_relationships(),
-                    "sentence_pattern": input_sentence.get_word_chunks(),
-                    "query": query_templates.father_of}
+            query = "f'{0}(X, {1})'".format(input_sentence.get_relationships(), input_sentence.get_word_chunks())
+            return query
+            # return f'{input_sentence.get_relationships()}(X, {input_sentence.get_word_chunks()})'
+            # return {"response": "added to knowledge base",
+            #         "relationship": input_sentence.get_relationships(),
+            #         "sentence_pattern": input_sentence.get_word_chunks(),
+            #         "query": query}
     else:
         return {"response": "Content-Type not supported!"}
 

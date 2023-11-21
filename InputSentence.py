@@ -15,7 +15,7 @@ stop_words = set(stopwords.words('english'))
 class InputSentence:
     def __init__(self, input_sentence):
         self.question_words = ["who", "are", "is", "are", "whom", "whose"]
-        self.relationships = ["father", "mother", "son", "daughter", "sibling", "parents"]
+        self.relationships = ["father", "mother", "son", "daughter", "sibling", "parents", "children"]
         self.word_tokens = word_tokenize(input_sentence)
         # word_tokens = [w for w in word_tokens if not w in stop_words]
         # self.tagged_tokens = nltk.pos_tag(word_tokens)
@@ -41,4 +41,4 @@ class InputSentence:
         return ner
 
     def get_relationships(self):
-        return [w for w in self.word_tokens if w in self.relationships]
+        return [w for w in self.word_tokens if w in self.relationships][0]
