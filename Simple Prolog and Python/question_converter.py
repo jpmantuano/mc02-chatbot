@@ -24,12 +24,16 @@ def question_to_prolog(query):
     elif 'who is the mother of ' in query:
         name = query.replace("who is the mother of ", "")
         return f'mother(X, {name.lower()})' 
+    
+    #Who is the mother of X?
+    elif 'who is the mother of ' in query:
+        name = query.replace("who is the mother of ", "")
+        return f'mother(X, {name.lower()})' 
 
-    #Is X a grandfather of Y?
-    elif all(word in query for word in ["is", "a", "grandfather", "of"]):
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["is", "a", "grandfather", "of"]]
-        return f'grandfather(X, {list_of_names[1]})'
+    #Who are the children of X?
+    elif 'who are the children of ' in query:
+        name = query.replace("who are the children of ", "")
+        return f'child(X, {name.lower()})' 
 
     #Is X a grandmother of Y?
     elif all(word in query for word in ["is", "a", "grandmother", "of"]):
@@ -138,6 +142,23 @@ def question_answer_converter(question_result, query):
     elif 'who is the mother of ' in query:
         if len(question_result) == 1:
             return f"The mother is {question_result[0]['X']}"
+        else:
+            return "Name/s is not yet in the knowledge base"
+        
+    #Who are the children of X?
+    elif 'who are the children of ' in query:
+        if len(question_result) > 0:
+            children_list = []
+            print(question_result)
+            counter = 0
+            while counter < len(question_result):
+                children_list.append(question_result[counter]['X'])
+                counter += 1
+            if len(children_list) > 1:
+                children_string = ', '.join(children_list)
+                return f"The children are {children_string}"
+            else:
+                return f"The child is {children_list[0]}"
         else:
             return "Name/s is not yet in the knowledge base"
 
