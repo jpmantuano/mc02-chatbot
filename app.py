@@ -26,7 +26,7 @@ def detect_sentence():
                 #     query.substitute(x=token[0])
 
             # print("-".join(token_sequence))
-            query = "f'{0}(X, {1})'".format(input_sentence.get_relationships(), input_sentence.get_word_chunks())
+            query = "f'{0}(X, {1})'".format(input_sentence.get_relationships(), input_sentence.get_word_chunks()[0][1])
             return query
             # return f'{input_sentence.get_relationships()}(X, {input_sentence.get_word_chunks()})'
             # return {"response": "sentence is a question",
