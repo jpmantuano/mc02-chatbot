@@ -1,9 +1,8 @@
 # question_converter.py
 from InputSentence import InputSentence
 
-
 def question_to_prolog(query):
-    query = query.lower().replace('?', '')
+    query = query.lower().replace('?', '').replace(',', '')
 
     # Are X and Y the parents of Z?
     if all(word in query for word in ["are", "and", "the", "parents", "of"]):
@@ -11,32 +10,77 @@ def question_to_prolog(query):
         list_of_names = [word for word in query if word not in ["are", "and", "the", "parents", "of"]]
         return f'parent(X, {list_of_names[2]})'
 
+    # Are X and Y siblings?
+    elif all(word in query for word in ["are", "and", "siblings"]):
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["are", "and", "siblings"]]
+        return f'sibling(X, {list_of_names[1]})'
+
+    # NOT WORKING PROPERLY YET
+    # Are X and Y relatives?
+    elif all(word in query for word in ["are", "and", "relatives"]):
+        query = query.split().replace(",", " ")
+        list_of_names = [word for word in query if word not in ["are", "and", "relatives"]]
+        return f'relative(X, {list_of_names[0]})'
+
+    # NOT WORKING PROPERLY YET
+    # Are W, X and Y children of Z?
+    elif all(word in query for word in ["are", "and", "children", "of"]):
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["are", "and", "children", "of"]]
+        return f'child(X, {list_of_names[3]})'
+
     # Who are the parents of X?
     elif 'who are the parents of ' in query:
         name = query.replace("who are the parents of ", "")
         return f'parent(X, {name.lower()})'
 
-        # Who is the father of X?
+    # Who is the father of X?
     elif 'who is the father of ' in query:
         name = query.replace("who is the father of ", "")
         return f'father(X, {name.lower()})'
 
-        # Who is the mother of X?
+    # Who is the mother of X?
     elif 'who is the mother of ' in query:
         name = query.replace("who is the mother of ", "")
         return f'mother(X, {name.lower()})'
 
-        # Who is the mother of X?
+    # Who is the mother of X?
     elif 'who is the mother of ' in query:
         name = query.replace("who is the mother of ", "")
         return f'mother(X, {name.lower()})'
 
-        # Who are the children of X?
+    # Who are the children of X?
     elif 'who are the children of ' in query:
         name = query.replace("who are the children of ", "")
         return f'child(X, {name.lower()})'
 
-        # Is X a grandmother of Y?
+    # Who are the siblings of X?
+    elif 'who are the siblings of ' in query:
+        name = query.replace("who are the siblings of ", "")
+        return f'sibling(X, {name.lower()})'
+
+    # Who are the sisters of X?
+    elif 'who are the sisters of ' in query:
+        name = query.replace("who are the sisters of ", "")
+        return f'sister(X, {name.lower()})'
+
+    # Who are the brothers of X?
+    elif 'who are the brothers of ' in query:
+        name = query.replace("who are the brothers of ", "")
+        return f'brother(X, {name.lower()})'
+
+    # Who are the daughters of X?
+    elif 'who are the daughters of ' in query:
+        name = query.replace("who are the daughters of ", "")
+        return f'daughter(X, {name.lower()})'
+
+    # Who are the sons of X?
+    elif 'who are the sons of ' in query:
+        name = query.replace("who are the sons of ", "")
+        return f'son(X, {name.lower()})'
+
+    # Is X a grandmother of Y?
     elif all(word in query for word in ["is", "a", "grandmother", "of"]):
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "grandmother", "of"]]
@@ -96,25 +140,6 @@ def question_to_prolog(query):
         list_of_names = [word for word in query if word not in ["is", "an", "aunt", "of"]]
         return f'aunt(X, {list_of_names[1]})'
 
-    # Are X and Y siblings?
-    elif all(word in query for word in ["are", "and", "siblings"]):
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["are", "and", "siblings"]]
-        return f'sibling(X, {list_of_names[1]})'
-
-    # Are X and Y relatives?
-    elif all(word in query for word in ["are", "and", "relatives"]):
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["are", "and", "relatives"]]
-        return f'relative(X, {list_of_names[1]})'
-
-    # WIP
-    # Are W, X and Y children of Z?
-    elif all(word in query for word in ["are", ",", "and", "children", "of"]):
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["are", ",", "and", "children", "of"]]
-        return f'child(X, {list_of_names[3]})'  # edit index to adapt with number of children
-
     else:
         return False
 
@@ -169,12 +194,129 @@ def question_answer_converter(question_result, query):
         else:
             return "Name/s is not yet in the knowledge base"
 
+    # Who are the siblings of X?
+    elif 'who are the siblings of ' in query:
+        if len(question_result) > 0:
+            sibling_list = []
+            print(question_result)
+            counter = 0
+            while counter < len(question_result):
+                sibling_list.append(question_result[counter]['X'])
+                counter += 1
+            if len(sibling_list) > 1:
+                sibling_string = ', '.join(sibling_list)
+                return f"The children are {sibling_string}"
+            else:
+                return f"The child is {sibling_list[0]}"
+        else:
+            return "Name/s is not yet in the knowledge base"
+
+    # Who are the sisters of X?
+    elif 'who are the sisters of ' in query:
+        if len(question_result) > 0:
+            sister_list = []
+            print(question_result)
+            counter = 0
+            while counter < len(question_result):
+                sister_list.append(question_result[counter]['X'])
+                counter += 1
+            if len(sister_list) > 1:
+                sister_string = ', '.join(sister_list)
+                return f"The sisters are {sister_string}"
+            else:
+                return f"The sister is {sister_list[0]}"
+        else:
+            return "Name/s is not yet in the knowledge base"
+
+    # Who are the brothers of X?
+    elif 'who are the brothers of ' in query:
+        if len(question_result) > 0:
+            brother_list = []
+            print(question_result)
+            counter = 0
+            while counter < len(question_result):
+                brother_list.append(question_result[counter]['X'])
+                counter += 1
+            if len(brother_list) > 1:
+                brother_string = ', '.join(brother_list)
+                return f"The brothers are {brother_string}"
+            else:
+                return f"The brother is {brother_list[0]}"
+        else:
+            return "Name/s is not yet in the knowledge base"
+
+    # Who are the daughters of X?
+    elif 'who are the daughters of ' in query:
+        if len(question_result) > 0:
+            daughter_list = []
+            print(question_result)
+            counter = 0
+            while counter < len(question_result):
+                daughter_list.append(question_result[counter]['X'])
+                counter += 1
+            if len(daughter_list) > 1:
+                daughter_string = ', '.join(daughter_list)
+                return f"The daughters are {daughter_string}"
+            else:
+                return f"The daughter is {daughter_list[0]}"
+        else:
+            return "Name/s is not yet in the knowledge base"
+
+    # Who are the sons of X?
+    elif 'who are the sons of ' in query:
+        if len(question_result) > 0:
+            son_list = []
+            print(question_result)
+            counter = 0
+            while counter < len(question_result):
+                son_list.append(question_result[counter]['X'])
+                counter += 1
+            if len(son_list) > 1:
+                son_string = ', '.join(son_list)
+                return f"The sons are {son_string}"
+            else:
+                return f"The son is {son_list[0]}"
+        else:
+            return "Name/s is not yet in the knowledge base"
+
     # Are X and Y the parents of Z?
     elif all(word in query for word in ["are", "and", "the", "parents", "of"]):
         query = query.split()
         list_of_names = [word for word in query if word not in ["are", "and", "the", "parents", "of"]]
         list_of_parents = [question_result[0]['X'], question_result[1]['X']]
         if all(item in list_of_names for item in list_of_parents):
+            return f"Answer: Yes"
+        else:
+            return f"Answer: No"
+
+    # Are X and Y siblings?
+    elif 'are' and 'and' and 'siblings' in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["are", "and", "siblings"]]
+        list_of_siblings = [question_result[0]['X']]
+        if all(item in list_of_names for item in list_of_siblings):
+            return f"Answer: Yes"
+        else:
+            return f"Answer: No"
+
+    # NOT WORKING PROPERLY YET
+    # Are X and Y relatives?
+    elif 'are' and 'and' and 'relatives' in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["are", "and", "relatives"]]
+        list_of_relatives = [question_result[0]['X']]
+        if any(item in list_of_names for item in list_of_relatives):
+            return f"Answer: Yes"
+        else:
+            return f"Answer: No"
+
+    # NOT WORKING PROPERLY YET
+    # Are W, X and Y children of Z?
+    elif all(word in query for word in ["are", "and", "children", "of"]):
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["are", "and", "children", "of"]]
+        list_of_children = [question_result[0:]]
+        if all(item in list_of_names for item in list_of_children):
             return f"Answer: Yes"
         else:
             return f"Answer: No"
@@ -289,33 +431,4 @@ def question_answer_converter(question_result, query):
         else:
             return f"Answer: No"
 
-    # Are X and Y siblings?
-    elif 'are' and 'and' and 'siblings' in query:
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["are", "and", "siblings"]]
-        list_of_siblings = [question_result[0]['X']]
-        if all(item in list_of_names for item in list_of_siblings):
-            return f"Answer: Yes"
-        else:
-            return f"Answer: No"
 
-    # Are X and Y relatives?
-    elif 'are' and 'and' and 'relatives' in query:
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["are", "and", "relatives"]]
-        list_of_relatives = [question_result[0]['X']]
-        if any(item in list_of_names for item in list_of_relatives):
-            return f"Answer: Yes"
-        else:
-            return f"Answer: No"
-
-    # WIP
-    # Are W, X and Y children of Z?
-    elif all(word in query for word in ["are", ",", "and", "children", "of"]):
-        query = query.split()
-        list_of_names = [word for word in query if word not in ["are", ",", "and", "children", "of"]]
-        list_of_children = [question_result[0]['X']]
-        if all(item in list_of_names for item in list_of_children):
-            return f"Answer: Yes"
-        else:
-            return f"Answer: No"
