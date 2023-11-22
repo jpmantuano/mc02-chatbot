@@ -7,7 +7,6 @@ from nltk.tokenize import word_tokenize
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('maxent_ne_chunker')
-# nltk.download('words')
 
 stop_words = set(stopwords.words('english'))
 
@@ -25,7 +24,7 @@ class InputSentence:
         # return self.is_question
 
     def get_tokens(self):
-        tokens = [w for w in self.word_tokens if not w in stop_words]
+        tokens = [w for w in self.word_tokens if not w.lower() in stop_words]
         tokens = [w.lower() for w in tokens if w.isalpha()]
         return nltk.pos_tag(tokens)
         # return self.tagged_tokens
@@ -39,6 +38,17 @@ class InputSentence:
                 print(entity_pair)
 
         return ner
+
+    def get_ner_position(self):
+        tokens = [w for w in self.get_tokens()]
+        ner_position = []
+        position = 0
+        for token in tokens:
+            pair = position, token[0]
+            ner_position.append(pair)
+            position += 1
+
+        return ner_position
 
     def get_relationships(self):
         return [w for w in self.word_tokens if w in self.relationships][0]
