@@ -170,10 +170,6 @@ def process_children(parents_list, children_list):
                         for pair in list_of_parent_child_pairs:
                             if child in pair and name in pair:
                                 pair_detection.append(True)
-                                print(child)
-                                print(name)
-                                print(pair)
-                                print(True)
                             else:
                                 pair_detection.append(False)
 
@@ -214,19 +210,12 @@ def get_children_of_parents(list_of_names, child_name):
                 for pair in list_of_parent_child_pairs:
                     if child in pair and name in pair:
                         pair_detection.append(True)
-                        print(child)
-                        print(name)
-                        print(pair)
-                        print(True)
                     else:
                         pair_detection.append(False)
                 if True in pair_detection:
                     continue
                 else:
                     sibling_list.append(f"sibling({child}, {name})")
-
-    print("sibling_list")
-    print(sibling_list)
 
     return updated_parents + sibling_list
     
@@ -236,8 +225,6 @@ def get_children_of_parents(list_of_names, child_name):
 def get_parents_of_siblings(list_of_names):
     parents_list = find_parents(list_of_names)
     final_parents = process_parents(parents_list, list_of_names)
-    print("Final Parents")
-    print(final_parents)
     return final_parents
 
 def find_parents(list_of_names):
@@ -268,9 +255,6 @@ def find_parents(list_of_names):
 
     # Remove None values and empty strings from the list
     parents_list = [result for result in parents_list if result is not None and result != '']
-
-    print("Parents_List")
-    print(parents_list)
        
     return parents_list
 
