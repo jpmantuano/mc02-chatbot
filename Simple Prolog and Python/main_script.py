@@ -62,9 +62,10 @@ if __name__ == "__main__":
                 # Add the fact into the knowledge base
                 for fact in prolog_fact:
                     if query_prolog_file(prolog_file, fact):
+                        print("NOT asserted: " + fact)
                         continue
                     else:
-                        print(fact)
+                        print("this is asserted: " + fact)
                         prolog_file.assertz(fact)
                 print('''"''' + user_input + '''"''' + " is in the knowledge base.")
 

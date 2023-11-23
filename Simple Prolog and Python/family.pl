@@ -1,5 +1,3 @@
-
-
 /* dynamic rules  */
 
 :- dynamic parent/2.
@@ -17,144 +15,109 @@
 :- dynamic male/1.
 :- dynamic female/1.
 
+:- dynamic parent_raw/2.
+
+:- discontiguous child/2.
 
 /* rules */
 
+% Helper predicate to check if a relationship already exists
+relationship_exists(Relationship, X, Y) :-
+    Term =.. [Relationship, X, Y],
+    clause(Term, _).
 
+parent(X, Y) :-
+    parent_raw(X, Y),
+    X \= Y,
+    \+parent_raw(Y, X).
 
+% Updated mother rule
 mother(X, Y) :-
     parent(X, Y),
-    female(X).
+    female(X),
+    X \= Y,
+    \+relationship_exists(mother, X, Y).
 
+% Updated father rule
 father(X, Y) :-
     parent(X, Y),
-    male(X).
+    male(X),
+    X \= Y,
+    \+relationship_exists(father, X, Y).
 
+% Updated child rule
+child(X, Y) :-
+    parent(Y, X),
+    X \= Y,
+    \+relationship_exists(child, X, Y).
+
+% Updated sibling rule
 sibling(X, Y) :-
     parent(Z, X),
     parent(Z, Y),
-    X \= Y.
+    X \= Y,
+    \+relationship_exists(sibling, X, Y).
 
+% Updated sister rule
 sister(X, Y) :-
     sibling(X, Y),
     female(X),
-    X \= Y.
+    X \= Y,
+    \+relationship_exists(sister, X, Y).
 
+% Updated brother rule
 brother(X, Y) :- 
     sibling(X, Y),
     male(X),
-    X \= Y.
+    X \= Y,
+    \+relationship_exists(brother, X, Y).
 
+% Updated child rule
 child(X, Y) :-
-    parent(Y, X).
+    parent(Y, X),
+    X \= Y,
+    \+relationship_exists(child, X, Y).
 
+% Updated partner rule
 partner(X, Y) :-
     child(Z, X),
     child(Z, Y),
-    X \= Y.
+    X \= Y,
+    \+relationship_exists(partner, X, Y).
 
-grandparent(X, Y) :-
-    parent(X, Z),
-    parent(Z, Y).
-
-grandchild(X, Y) :-
-    grandparent(Y, X).
-
-grandfather(X, Y) :-
-    grandparent(X, Y),
-    male(X).
-
-grandmother(X, Y) :-
-    grandparent(X, Y),
-    female(X).
-
-paternalgrandfather(X, Y) :-
-    father(X, Z),
-    father(Z, Y).
-
-maternalgrandfather(X, Y) :-
-    father(X, Z),
-    mother(Z, Y).
-
-paternalgrandmother(X, Y) :-
-    mother(X, Z),
-    father(Z, Y).
-
-maternalgrandmother(X, Y) :-
-    mother(X, Z),
-    mother(Z, Y).
-
-greatgrandparent(X, Y) :-
-    parent(P, Y),
-    grandparent(X, P).
-
-greatgrandchild(X, Y) :-
-    greatgrandparent(Y, X).
-
-son(X, Y) :-
-    child(X, Y),
-    male(X).
-
-daughter(X, Y) :-
-    child(X, Y),
-    female(X).
-
-granddaughter(X, Y) :-
-    grandchild(X, Y),
-    female(X).
-
-grandson(X, Y) :-
-    grandchild(X, Y),
-    male(X).
-
-ancestor(X, Y) :-
-    parent(X, Y).
-
-ancestor(X, Y) :-
-    parent(Z, Y),
-    ancestor(X, Z).
-
-descendant(X, Y) :-
-    ancestor(Y, X).
-
-relative(X, Y) :-
-    ancestor(Z, X),
-    ancestor(Z, Y).
-
+% Updated uncle rule
 uncle(X, Y) :-
     brother(X, Z),
-    child(Y, Z).
+    child(Y, Z),
+    X \= Y,
+    \+relationship_exists(uncle, X, Y).
 
+% Updated aunt rule
 aunt(X, Y) :-
     sister(X, Z),
-    child(Y, Z).
+    child(Y, Z),
+    X \= Y,
+    \+relationship_exists(aunt, X, Y).
 
+
+% Updated cousin rule
 cousin(X, Y) :-
     grandparent(Z, X),
     grandparent(Z, Y),
     \+sibling(X, Y),
-    X \= Y.
+    X \= Y,
+    \+relationship_exists(cousin, X, Y).
 
-cousinonceremoved(X, Y) :-
-    cousin(Z, Y),
-    child(X, Z).
-
-secondcousin(X, Y) :-
-    greatgrandparent(Z, X),
-    greatgrandparent(Z, Y),
-    \+sibling(X, Y),
-    \+cousin(X, Y),
-    X \= Y.
-
+% Updated nephew rule
 nephew(X, Y) :-
-    aunt(Y, X),
-    male(X);
-    uncle(Y, X),
-    male(X).
+    (aunt(Y, X) ; uncle(Y, X)),
+    male(X),
+    X \= Y,
+    \+relationship_exists(nephew, X, Y).
 
+% Updated niece rule
 niece(X, Y) :-
-    aunt(Y, X),
-    female(X);
-    uncle(Y, X),
-    female(X).
-
+    (aunt(Y, X) ; uncle(Y, X)),
+    female(X),
+    X \= Y,
+    \+relationship_exists(niece, X, Y).

@@ -7,7 +7,17 @@ prolog_file.consult('family.pl')
 
 
 
+def find_relationships(list_of_names, return_query, new_child_name):
+    child_list = get_children_of_parents(list_of_names, new_child_name)
+    parents_list = get_parents_of_siblings(list_of_names, new_child_name)
+    descendant_list = get_descendants(list_of_names, return_query, new_child_name)
+    uncle_and_aunts_list = get_uncle_aunt(list_of_names, return_query, new_child_name)
 
+    relationship_list = return_query + child_list + parents_list + descendant_list + uncle_and_aunts_list
+
+    relationship_list = list({tuple(pair): pair for pair in relationship_list}.values())
+
+    return relationship_list
 
 
 
@@ -25,72 +35,153 @@ def statement_to_prolog(query):
     if "are the parents of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["and", "are", "the", "parents", "of"]]
-        return [f'parent({list_of_names[0]}, {list_of_names[2]})', f'parent({list_of_names[1]}, {list_of_names[2]})']
+        new_child_name = [list_of_names[2]]
+        return_query = [f'parent({list_of_names[0]}, {list_of_names[2]})', 
+                        f'parent({list_of_names[1]}, {list_of_names[2]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
 
     #X is the father of Y.
     elif "is the father of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "the", "father", "of"]]
-        return [f'father({list_of_names[0]}, {list_of_names[1]})', f'parent({list_of_names[0]}, {list_of_names[1]})']
+        new_child_name = [list_of_names[1]]
+        return_query = [f'father({list_of_names[0]}, {new_child_name[0]})', 
+                        f'parent({list_of_names[0]}, {new_child_name[0]})',
+                        f'child({new_child_name[0]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts      
 
     #X is the Mother of Y.
     elif "is the mother of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "the", "mother", "of"]]
         new_child_name = [list_of_names[1]]
-        child_list = get_children_of_parents(list_of_names, new_child_name)
-        parents_list = get_parents_of_siblings(list_of_names)
-        return [f'mother({list_of_names[0]}, {new_child_name[0]})', 
-                f'parent({list_of_names[0]}, {new_child_name[0]})',
-                f'child({new_child_name[0]}, {list_of_names[0]})'] + child_list + parents_list
+        return_query = [f'mother({list_of_names[0]}, {new_child_name[0]})', 
+                        f'parent({list_of_names[0]}, {new_child_name[0]})',
+                        f'child({new_child_name[0]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
     
     #X is a child of Y.
     elif "is a child of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "child", "of"]]
-        return [f'child({list_of_names[0]}, {list_of_names[1]})', f'parent({list_of_names[1]}, {list_of_names[0]})']
+        new_child_name = [list_of_names[0]]
+        return_query = [f'child({list_of_names[0]}, {list_of_names[1]})', 
+                        f'parent({list_of_names[1]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
     
     #X and Y are siblings.
     elif "are siblings" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["and", "are", "siblings"]]
-        parents_list = get_parents_of_siblings(list_of_names)
-        return [f'sibling({list_of_names[0]}, {list_of_names[1]})'] + parents_list
+        new_child_name = [list_of_names[0], list_of_names[1]]
+        return_query = [f'sibling({list_of_names[0]}, {list_of_names[1]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
     
     #X is a sister of Y.
     elif "is a sister of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "sister", "of"]]
-        parents_list = get_parents_of_siblings(list_of_names)
-        return [f'sister({list_of_names[0]}, {list_of_names[1]})', f'sibling({list_of_names[0]}, {list_of_names[1]})'] + parents_list
+        new_child_name = [list_of_names[0], list_of_names[1]]
+        return_query = [f'sister({list_of_names[0]}, {list_of_names[1]})', 
+                        f'sibling({list_of_names[0]}, {list_of_names[1]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
     
     #X is a brother of Y.
     elif "is a brother of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "brother", "of"]]
-        parents_list = get_parents_of_siblings(list_of_names)
-        return [f'brother({list_of_names[0]}, {list_of_names[1]})', f'sibling({list_of_names[0]}, {list_of_names[1]})'] + parents_list
+        new_child_name = [list_of_names[0], list_of_names[1]]
+        return_query = [f'brother({list_of_names[0]}, {list_of_names[1]})', 
+                        f'sibling({list_of_names[0]}, {list_of_names[1]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
 
     #X is a grandmother of Y.
     elif "is a grandmother of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "grandmother", "of"]]
-        return [f'grandmother({list_of_names[0]}, {list_of_names[1]})', 
-                f'grandchild({list_of_names[1]}, {list_of_names[0]})']
+        new_child_name = [list_of_names[1]]
+        return_query = [f'grandmother({list_of_names[0]}, {list_of_names[1]})', 
+                        f'grandchild({list_of_names[1]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts 
 
     #X is a grandfather of Y.
     elif "is a grandfather of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "grandfather", "of"]]
-        return [f'grandfather({list_of_names[0]}, {list_of_names[1]})', f'grandchild({list_of_names[1]}, {list_of_names[0]})']
+        new_child_name = [list_of_names[1]]
+        return_query = [f'grandfather({list_of_names[0]}, {list_of_names[1]})', 
+                        f'grandchild({list_of_names[1]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts  
 
-    #X is a daughter of Y.s
+    #X is a daughter of Y.
     elif "is a daughter of" in query:
         query = query.split()
         list_of_names = [word for word in query if word not in ["is", "a", "daughter", "of"]]
-        return [f'child({list_of_names[0]}, {list_of_names[1]})', 
-                f'parent({list_of_names[1]}, {list_of_names[0]})', 
-                f'daughter({list_of_names[0]}, {list_of_names[1]})']
+        new_child_name = [list_of_names[0]]
+        return_query = [f'child({list_of_names[0]}, {list_of_names[1]})', 
+                        f'parent({list_of_names[1]}, {list_of_names[0]})', 
+                        f'daughter({list_of_names[0]}, {list_of_names[1]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts  
+    
+    #X is a son of Y.
+    elif "is a son of" in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["is", "a", "son", "of"]]
+        new_child_name = [list_of_names[0]]
+        return_query = [f'child({list_of_names[0]}, {list_of_names[1]})', 
+                        f'parent({list_of_names[1]}, {list_of_names[0]})', 
+                        f'son({list_of_names[0]}, {list_of_names[1]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts  
+    
+    #X is an uncle of Y.
+    elif "is an uncle of" in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["is", "an", "uncle", "of"]]
+        new_child_name = [list_of_names[0]]
+        return_query = [f'uncle({list_of_names[1]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
+    
+    #X is an aunt of Y.
+    elif "is an aunt of" in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["is", "an", "aunt", "of"]]
+        new_child_name = [list_of_names[0]]
+        return_query = [f'aunt({list_of_names[1]}, {list_of_names[0]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts
+    
+    #X, Y, and Z are children of W.
+    elif "are children of" in query:
+        query = query.replace(",","")
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["and", "are", "children", "of"]]
+        print(list_of_names)
+        new_child_name = [list_of_names[0], list_of_names[1], list_of_names[2]]
+        return_query = [f'parent({list_of_names[3]}, {list_of_names[0]})', 
+                        f'parent({list_of_names[3]}, {list_of_names[1]})', 
+                        f'parent({list_of_names[3]}, {list_of_names[2]})',
+                        f'child({list_of_names[0]}, {list_of_names[3]})',
+                        f'child({list_of_names[1]}, {list_of_names[3]})',
+                        f'sibling({list_of_names[0]}, {list_of_names[1]})',
+                        f'sibling({list_of_names[0]}, {list_of_names[2]})',
+                        f'sibling({list_of_names[1]}, {list_of_names[0]})',
+                        f'sibling({list_of_names[1]}, {list_of_names[2]})',
+                        f'sibling({list_of_names[2]}, {list_of_names[0]})',
+                        f'sibling({list_of_names[2]}, {list_of_names[1]})']
+        relationship_facts= find_relationships(list_of_names, return_query, new_child_name)
+        return relationship_facts 
 
     else:
         return False
@@ -101,11 +192,46 @@ def statement_to_prolog(query):
 #This section provides logic to find the relationship between siblings and parents#
 ########################################################################################################################
 
-def find_siblings():
-    return
 
 
-###########################  CODE TO FIND Children ###################################
+
+###########################  CODE TO FIND CHILDREN ###################################
+
+def get_children_of_parents(list_of_names, child_name):
+    children_list = find_children(list_of_names)
+    children_list = children_list + child_name
+    print("CHILDREN LIST")
+    print(children_list)
+    parents_list = find_parents(children_list)
+    print("PARENTS LIST")
+    print(parents_list)
+    updated_parents = process_children(parents_list, children_list)
+    print("UPDATED PARENTS LIST")
+    print(updated_parents)
+
+    
+    list_of_parent_child_pairs = get_parent_child_pairs(parents_list, children_list)
+
+    sibling_list = []
+
+    for child in children_list:
+        for name in children_list:
+            if child == name:
+                continue
+            else:
+                pair_detection  = []
+                for pair in list_of_parent_child_pairs:
+                    if child in pair and name in pair:
+                        pair_detection.append(True)
+                    else:
+                        pair_detection.append(False)
+                if True in pair_detection:
+                    continue
+                else:
+                    sibling_list.append(f"sibling({child}, {name})")
+
+    return updated_parents + sibling_list
+
 
 def find_children(list_of_names):
     # List to store query results
@@ -149,6 +275,14 @@ def get_parent_child_pairs(parents_list, children_list):
                     fact = parents_list[i].replace('child(', '').replace(')', '').replace(' ', '')
                     parent_child = fact.split(",")
                     list_of_parent_child_pairs.append(parent_child)
+                elif name and name2 and "father" in parents_list[i]:
+                    fact = parents_list[i].replace('father(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    list_of_parent_child_pairs.append(parent_child)
+                elif name and name2 and "mother" in parents_list[i]:
+                    fact = parents_list[i].replace('mother(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    list_of_parent_child_pairs.append(parent_child)
 
     return list_of_parent_child_pairs
 
@@ -183,48 +317,19 @@ def process_children(parents_list, children_list):
     updated_parents_list = list(set(updated_parents_list) - set(parents_list))
     
     return updated_parents_list
-
-def get_children_of_parents(list_of_names, child_name):
-    print("get_children_of_parents")
-    children_list = find_children(list_of_names)
-    children_list = children_list + child_name
-    print("children_list")
-    print(children_list)
-    parents_list = find_parents(children_list)
-    print("parents_list")
-    print(parents_list)
-    updated_parents = process_children(parents_list, children_list)
-    print("updated_parents")
-    print(updated_parents)
-
-    list_of_parent_child_pairs = get_parent_child_pairs(parents_list, children_list)
-
-    sibling_list = []
-
-    for child in children_list:
-        for name in children_list:
-            if child == name:
-                continue
-            else:
-                pair_detection  = []
-                for pair in list_of_parent_child_pairs:
-                    if child in pair and name in pair:
-                        pair_detection.append(True)
-                    else:
-                        pair_detection.append(False)
-                if True in pair_detection:
-                    continue
-                else:
-                    sibling_list.append(f"sibling({child}, {name})")
-
-    return updated_parents + sibling_list
     
+
+###########################  CODE TO FIND CHILDREN ###################################
 
 ###########################  CODE TO FIND PARENTS ###################################
 
-def get_parents_of_siblings(list_of_names):
+def get_parents_of_siblings(list_of_names, new_child_name):
     parents_list = find_parents(list_of_names)
-    final_parents = process_parents(parents_list, list_of_names)
+    final_parents = process_parents(parents_list, list_of_names, new_child_name)
+
+    print("PARENTS of SIBLINGS")
+    print(final_parents)
+
     return final_parents
 
 def find_parents(list_of_names):
@@ -258,7 +363,10 @@ def find_parents(list_of_names):
        
     return parents_list
 
-def process_parents(parents_list, list_of_names):
+def process_parents(parents_list, list_of_names, new_child_name):
+
+    list_of_siblings = new_child_name
+
     new_name = []
     for name in list_of_names:
         found = any(name in item for item in parents_list)
@@ -270,7 +378,11 @@ def process_parents(parents_list, list_of_names):
     facts_list = []
 
     for name in new_name:
-        facts_list.append([fact.replace(old_name, name) for fact in parents_list])
+        for sibling in list_of_siblings:
+            if name != sibling:
+                continue
+            else:
+                facts_list.append([fact.replace(old_name, name) for fact in parents_list])
 
     facts_list = [item for sublist in facts_list for item in sublist]
     facts_list = [f'{fact}' for fact in facts_list]
@@ -278,3 +390,169 @@ def process_parents(parents_list, list_of_names):
     return facts_list
 
 ###########################  CODE TO FIND PARENTS ###################################
+
+###########################  CODE TO FIND GRANDPARENTS ###################################
+
+def get_descendants(list_of_names, return_query, child_name):
+
+    children_list = find_children(list_of_names)
+    children_list = children_list + child_name
+    parents_list = find_parents(children_list)
+    parents_list = parents_list + return_query
+
+    parent_child_pair = []
+
+    for i in range(len(parents_list)):
+        for name in children_list:
+            for name2 in children_list:
+                if name == name2:
+                    continue
+                elif name and name2 not in parents_list[i]:
+                    continue
+                elif name and name2 and "parent" in parents_list[i]:
+                    fact = parents_list[i].replace('parent(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    parent_child_pair.append(parent_child)
+                elif name and name2 and "father" in parents_list[i]:
+                    fact = parents_list[i].replace('father(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    parent_child_pair.append(parent_child)
+                elif name and name2 and "mother" in parents_list[i]:
+                    fact = parents_list[i].replace('mother(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    parent_child_pair.append(parent_child)
+
+    parent_child_pair = list({tuple(pair): pair for pair in parent_child_pair}.values())
+
+
+    list_of_grandparent_grandchild = []
+
+    for pair in parent_child_pair:
+        parent = pair[0]
+        child  = pair [1]
+
+        for pair2 in parent_child_pair:
+            if pair == pair2:
+                continue
+            elif child == pair2[0]:
+                list_of_grandparent_grandchild.append([parent, pair2[1]])
+
+    
+    grandparent_facts = []
+
+    for pair in list_of_grandparent_grandchild:
+        for relationship in parents_list: 
+            if f"father({pair[0]}" in relationship:
+                grandparent_facts.append(f'grandfather({pair[0]}, {pair[1]})')
+            elif f"mother({pair[0]}" in relationship:
+                grandparent_facts.append(f'grandmother({pair[0]}, {pair[1]})')
+            else:
+                continue
+    
+    grandparent_facts = list({tuple(pair): pair for pair in grandparent_facts}.values())
+
+    print("DESCENDANTS")
+    print(grandparent_facts)
+
+    return grandparent_facts
+
+
+###########################  CODE TO FIND GRANDPARENTS ###################################
+
+###########################  CODE TO FIND UNCLES AND AUNTS ###################################
+
+def get_uncle_aunt(list_of_names, return_query, child_name):
+
+    children_list = find_children(list_of_names)
+    children_list = children_list + child_name
+    parents_list = find_parents(children_list)
+    parents_list = parents_list + return_query
+
+
+    parent_child_pair = []
+
+    for i in range(len(parents_list)):
+        for name in children_list:
+            for name2 in children_list:
+                if name == name2:
+                    continue
+                elif name and name2 not in parents_list[i]:
+                    continue
+                elif name and name2 and "parent" in parents_list[i]:
+                    fact = parents_list[i].replace('parent(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    parent_child_pair.append(parent_child)
+                elif name and name2 and "father" in parents_list[i]:
+                    fact = parents_list[i].replace('father(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    parent_child_pair.append(parent_child)
+                elif name and name2 and "mother" in parents_list[i]:
+                    fact = parents_list[i].replace('mother(', '').replace(')', '').replace(' ', '')
+                    parent_child = fact.split(",")
+                    parent_child_pair.append(parent_child)
+
+    parent_child_pair = list({tuple(pair): pair for pair in parent_child_pair}.values())
+
+
+    parents_of_new_child = []
+
+    for pair in parent_child_pair:
+        if child_name[0] in pair:
+            parents_of_new_child.append(pair[0])
+        else:
+            continue
+
+    
+    parent_of_parents = find_parents(parents_of_new_child)
+
+    grandparents = []
+
+    for relationship in parent_of_parents:
+        for name in parents_of_new_child:
+            if name + ")" in relationship:
+                if "parent" in relationship:
+                    grandparent = relationship.replace('parent(', '').replace(f'{name})', '').replace(' ', '').replace(',', '')
+                    grandparents.append(grandparent)
+                elif "father" in relationship:
+                    grandparent = relationship.replace('father(', '').replace(f'{name})', '').replace(' ', '').replace(',', '')
+                    grandparents.append(grandparent)
+                elif "mother" in relationship:
+                    grandparent = relationship.replace('mother(', '').replace(f'{name})', '').replace(' ', '').replace(',', '')
+                    grandparents.append(grandparent)
+            else:
+                continue
+
+    sibling_list = find_children(grandparents)
+    sibling_list = list(set(sibling_list) - set(parents_of_new_child))
+
+    uncle_aunt_facts = []
+
+    for sibling in sibling_list:
+        try:
+            if list(prolog_file.query(f"male({sibling})")):
+                uncle_aunt_facts.append(f"uncle({sibling}, {child_name[0]})")
+            elif list(prolog_file.query(f"female({sibling})")):
+                uncle_aunt_facts.append(f"aunt({sibling}, {child_name[0]})")
+        except Exception:
+            continue
+            
+    
+    for sibling in sibling_list:
+        for parent in parents_of_new_child:
+            if sibling == parent:
+                continue
+            else:
+                try:
+                    if list(prolog_file.query(f"brother({parent}, {sibling})")) or list(prolog_file.query(f"brother({sibling}, {parent})")):
+                        uncle_aunt_facts.append(f"uncle({sibling}, {child_name[0]})")
+                    elif list(prolog_file.query(f"sister({parent}, {sibling})")) or list(prolog_file.query(f"sister({sibling}, {parent})")):
+                        uncle_aunt_facts.append(f"aunt({sibling}, {child_name[0]})")
+                except Exception:
+                    continue
+
+    uncle_aunt_facts = list({tuple(pair): pair for pair in uncle_aunt_facts}.values())
+
+    print("UNCLE AND AUNT LIST")
+    print(uncle_aunt_facts)
+
+    return uncle_aunt_facts
