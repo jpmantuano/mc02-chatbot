@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     while True:
         # User input for the question
-        user_input = input("Enter your question (or type 'exit' to end): ")
+        user_input = input("Enter your question or statement (or type 'exit' to end): ")
 
         
         # Exit the loop if the user enters 'exit'

@@ -615,9 +615,10 @@ def get_descendants(list_of_names, return_query, child_name):
 def get_uncle_aunt(list_of_names, return_query, child_name):
 
     children_list = find_children(list_of_names)
-    children_list = children_list + child_name
+    children_list = children_list + child_name + list_of_names
     parents_list = find_parents(children_list)
     parents_list = parents_list + return_query
+
 
 
     parent_child_pair = []
@@ -643,7 +644,6 @@ def get_uncle_aunt(list_of_names, return_query, child_name):
                     parent_child_pair.append(parent_child)
 
     parent_child_pair = list({tuple(pair): pair for pair in parent_child_pair}.values())
-
 
     parents_of_new_child = []
 
@@ -673,7 +673,28 @@ def get_uncle_aunt(list_of_names, return_query, child_name):
             else:
                 continue
 
-    sibling_list = find_children(grandparents)
+
+    sibling_list = []
+
+
+    for name in list_of_names:
+        for name2 in list_of_names:
+            if name == name2:
+                continue
+            elif f"brother({name}, {name2})" or f"brother({name2}, {name})" in return_query:
+                    sibling_list.append(name)
+                    sibling_list.append(name2)
+            elif f"sister({name}, {name2})" or f"sister({name2}, {name})" in return_query:
+                    sibling_list.append(name)
+                    sibling_list.append(name2)
+            elif f"sibling({name}, {name2})" or f"sibling({name2}, {name})" in return_query:
+                    sibling_list.append(name)
+                    sibling_list.append(name2)
+            else:
+                continue
+    
+
+    sibling_list = sibling_list + find_siblings(parents_of_new_child) + find_children(grandparents) + find_siblings(list_of_names)
     sibling_list = list(set(sibling_list) - set(parents_of_new_child))
 
     uncle_aunt_facts = []
@@ -701,9 +722,47 @@ def get_uncle_aunt(list_of_names, return_query, child_name):
                 except Exception:
                     continue
 
+
+    for sibling in sibling_list:
+        for pair in parent_child_pair:
+            for name in list_of_names:
+                if sibling == name:
+                    continue
+                elif name == pair[0]:
+                    if f"brother({name}, {sibling})" or f"brother({sibling}, {name})" in return_query:
+                        uncle_aunt_facts.append(f"uncle({sibling}, {pair[1]})")
+                    elif f"sister({name}, {sibling})" or f"sister({sibling}, {name})" in return_query:
+                        uncle_aunt_facts.append(f"aunt({sibling}, {pair[1]})")
+                else:
+                    continue
+
+
+
     uncle_aunt_facts = list({tuple(pair): pair for pair in uncle_aunt_facts}.values())
 
     print("UNCLE AND AUNT LIST")
     print(uncle_aunt_facts)
 
     return uncle_aunt_facts
+
+
+def find_siblings(list_of_names):
+    relationships = ['sibling', 'sister', 'brother']
+    
+    list_of_siblings = []
+
+    for name in list_of_names:
+        for relationship  in relationships:      
+                    query = f"{relationship}({name}, Y)."
+                    result = list(prolog_file.query(query))
+                    for sibling in result:
+                        list_of_siblings.append(sibling['Y'])
+                    query2 = f"{relationship}(X, {name})."
+                    result2 = list(prolog_file.query(query2))
+                    for sibling in result2:
+                        list_of_siblings.append(sibling['X'])
+
+
+    list_of_siblings = list({tuple(pair): pair for pair in list_of_siblings}.values())
+
+    return list_of_siblings
