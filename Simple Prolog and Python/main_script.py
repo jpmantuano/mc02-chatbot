@@ -24,6 +24,7 @@ if __name__ == "__main__":
         # User input for the question
         user_input = input("Enter your question (or type 'exit' to end): ")
 
+        
         # Exit the loop if the user enters 'exit'
         if user_input.lower() == 'exit':
             break
@@ -55,8 +56,12 @@ if __name__ == "__main__":
             prolog_fact = statement_to_prolog(user_input) # Convert the user's statement to a Prolog Fact
 
             #Validate if this is a valid statement
-            if prolog_fact == False:
-                print("Invaid Format")
+            if prolog_fact == "Kindly fix the sentence format.":
+                print("Kindly fix the sentence format.")
+            elif prolog_fact == "That's impossible!":
+                print("That's impossible!")
+            elif prolog_fact == "I already know that!":
+                print("I already know that!")
             else:
                 print(prolog_fact)
                 # Add the fact into the knowledge base
@@ -67,7 +72,7 @@ if __name__ == "__main__":
                     else:
                         print("this is asserted: " + fact)
                         prolog_file.assertz(fact)
-                print('''"''' + user_input + '''"''' + " is in the knowledge base.")
+                print("Ok! I learned something.")
 
 
         
