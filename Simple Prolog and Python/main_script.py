@@ -36,7 +36,7 @@ if __name__ == "__main__":
             
             #Validate if this is a valid question
             if prolog_query == False:
-                print("Invaid Format")
+                print("Kindly fix the question format.")
             else:
                 print(prolog_query)
                 # Perform the user's query
@@ -45,11 +45,6 @@ if __name__ == "__main__":
                     print("Name/s is not yet in the knowledge base")
                     continue
                 question_answer = question_answer_converter(question_result,user_input)
-                
-                # Display user's query result
-                print("\nUser's Query Results:")
-                for solution in question_result:
-                    print(solution)
                 print(question_answer)
 
         else:
