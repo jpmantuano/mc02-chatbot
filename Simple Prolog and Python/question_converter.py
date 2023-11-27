@@ -17,14 +17,12 @@ def question_to_prolog(query):
         list_of_names = [word for word in query if word not in ["are", "and", "siblings"]]
         return f'sibling(X, {list_of_names[1]})'
 
-    # NOT WORKING PROPERLY YET
     # Are X and Y relatives?
     elif all(word in query for word in ["are", "and", "relatives"]):
         query = query.split()
         list_of_names = [word for word in query if word not in ["are", "and", "relatives"]]
-        return f'relative(X, {list_of_names[0]})'
+        return f'relative(X, {list_of_names[1]})'
 
-    # NOT WORKING PROPERLY YET
     # Are W, X and Y children of Z?
     elif all(word in query for word in ["are", "and", "children", "of"]):
         query = query.split()
@@ -306,7 +304,6 @@ def question_answer_converter(question_result, query):
         else:
             return f"Answer: No"
 
-    # NOT WORKING PROPERLY YET
     # Are X and Y relatives?
     elif 'are' and 'and' and 'relatives' in query:
         query = query.split()
@@ -317,18 +314,16 @@ def question_answer_converter(question_result, query):
         else:
             return f"Answer: No"
 
-    # NOT WORKING PROPERLY YET
     # Are W, X and Y children of Z?
     elif all(word in query for word in ["are", "and", "children", "of"]):
         query = query.split()
         list_of_names = [word.lower().strip(string.punctuation) for word in query if word not in ["are", "and", "children", "of"]]
         list_of_children = [result['X'].lower().strip(string.punctuation) for result in question_result]
 
-        if any(item in list_of_names for item in list_of_children) and all(
-                item in list_of_children for item in list_of_names):
-            return f"Answer: Yes"
+        if all(name in list_of_children for name in list_of_names[:3]):
+            return "Answer: Yes"
         else:
-            return f"Answer: No"
+            return "Answer: No"
 
     # Is X a grandfather of Y?
     elif 'is' and 'a grandfather of ' in query:
