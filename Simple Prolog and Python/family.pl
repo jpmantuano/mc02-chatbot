@@ -11,6 +11,7 @@
 :- dynamic grandfather/2.
 :- dynamic child/2.
 :- dynamic daughter/2.
+:- dynamic son/2.
 :- dynamic aunt/2.
 :- dynamic uncle/2.
 
