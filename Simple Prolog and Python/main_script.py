@@ -9,8 +9,11 @@ def load_prolog_file(file_path):
     return prolog
 
 def query_prolog_file(prolog, query):
-    solutions = list(prolog.query(query))
-    return solutions
+    if type(query) != list:
+        return []
+    else:
+        solutions = list(prolog.query(query))
+        return solutions
 
 if __name__ == "__main__":
     # Assuming 'family.pl' is in the same directory
@@ -62,10 +65,10 @@ if __name__ == "__main__":
                 # Add the fact into the knowledge base
                 for fact in prolog_fact:
                     if query_prolog_file(prolog_file, fact):
-
+                        continue
+                    elif type(prolog_fact) != list:
                         continue
                     else:
-
                         prolog_file.assertz(fact)
                 print("Ok! I learned something.")
 

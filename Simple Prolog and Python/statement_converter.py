@@ -126,6 +126,29 @@ def existing_relationship_cleaner(list_of_names, relationship_facts):
 def statement_to_prolog(query):
     query = query.lower().replace('.', '')
 
+    #X is a male.
+    if "is a male" in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["is", "a", "male"]]
+        return_query = [f'male({list_of_names[0]})']
+        if list(prolog_file.query(return_query[0])):
+            return "I already know that!"
+        elif list(prolog_file.query(f'female({list_of_names[0]})')):
+            return "That's Impossible!"
+        else:
+            return return_query
+        
+    #X is a female.
+    if "is a female" in query:
+        query = query.split()
+        list_of_names = [word for word in query if word not in ["is", "a", "female"]]
+        return_query = [f'female({list_of_names[0]})']
+        if list(prolog_file.query(return_query[0])):
+            return "I already know that!"
+        elif list(prolog_file.query(f'male({list_of_names[0]})')):
+            return "That's Impossible!"
+        else:
+            return return_query
 
     #X and Y are the parents of Z.
     if "are the parents of" in query:
