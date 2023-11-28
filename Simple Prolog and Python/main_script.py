@@ -38,7 +38,7 @@ if __name__ == "__main__":
             if prolog_query == False:
                 print("Kindly fix the question format.")
             else:
-                print(prolog_query)
+
                 # Perform the user's query
                 question_result = query_prolog_file(prolog_file, prolog_query)
                 if question_result == []:
@@ -58,14 +58,14 @@ if __name__ == "__main__":
             elif prolog_fact == "I already know that!":
                 print("I already know that!")
             else:
-                print(prolog_fact)
+
                 # Add the fact into the knowledge base
                 for fact in prolog_fact:
                     if query_prolog_file(prolog_file, fact):
-                        print("NOT asserted: " + fact)
+
                         continue
                     else:
-                        print("this is asserted: " + fact)
+
                         prolog_file.assertz(fact)
                 print("Ok! I learned something.")
 

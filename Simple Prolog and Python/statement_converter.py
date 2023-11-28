@@ -78,8 +78,6 @@ def existing_relationship_cleaner(list_of_names, relationship_facts):
                      'grandchild', 'grandmother', 'grandfather', 'child', 'daughter', 
                      'aunt', 'uncle']  # Add other relationships as needed
     
-    print("RELATIONSHIP FACTS")
-    print(relationship_facts)
 
     list_of_names_with_relationship = []
 
@@ -96,12 +94,10 @@ def existing_relationship_cleaner(list_of_names, relationship_facts):
 
                         
 
-    print(list_of_names_with_relationship)
 
     list_of_names_with_relationship = list({tuple(pair): pair for pair in list_of_names_with_relationship}.values())
 
-    print("LIST OF NAMES WITH RELATIONSHIP")
-    print(list_of_names_with_relationship)
+
 
     updated_relationship_facts = []
 
@@ -115,8 +111,7 @@ def existing_relationship_cleaner(list_of_names, relationship_facts):
                 else:
                     updated_relationship_facts.append(facts)
 
-    print("UPDATED RELATIONSHIP FACTS")
-    print(updated_relationship_facts)
+
 
     return updated_relationship_facts
 
@@ -340,14 +335,11 @@ def statement_to_prolog(query):
 def get_children_of_parents(list_of_names, child_name):
     children_list = find_children(list_of_names)
     children_list = children_list + child_name
-    print("CHILDREN LIST")
-    print(children_list)
+
     parents_list = find_parents(children_list)
-    print("PARENTS LIST")
-    print(parents_list)
+
     updated_parents = process_children(parents_list, children_list)
-    print("UPDATED PARENTS LIST")
-    print(updated_parents)
+
 
     
     list_of_parent_child_pairs = get_parent_child_pairs(parents_list, children_list)
@@ -467,8 +459,7 @@ def get_parents_of_siblings(list_of_names, new_child_name):
     parents_list = find_parents(list_of_names)
     final_parents = process_parents(parents_list, list_of_names, new_child_name)
 
-    print("PARENTS of SIBLINGS")
-    print(final_parents)
+
 
     return final_parents
 
@@ -518,8 +509,7 @@ def process_parents(parents_list, list_of_names, new_child_name):
     facts_list = []
 
     remove_parents_list = []
-    print("REMOVE  PARENTS LIST")
-    print(remove_parents_list)
+
 
     for parent in list_of_names:
         for child in children_list:
@@ -602,8 +592,7 @@ def get_descendants(list_of_names, return_query, child_name):
     
     grandparent_facts = list({tuple(pair): pair for pair in grandparent_facts}.values())
 
-    print("DESCENDANTS")
-    print(grandparent_facts)
+
 
     return grandparent_facts
 
@@ -700,48 +689,37 @@ def get_uncle_aunt(list_of_names, return_query, child_name):
     uncle_aunt_facts = []
 
     for sibling in sibling_list:
-        try:
-            if list(prolog_file.query(f"male({sibling})")):
-                uncle_aunt_facts.append(f"uncle({sibling}, {child_name[0]})")
-            elif list(prolog_file.query(f"female({sibling})")):
-                uncle_aunt_facts.append(f"aunt({sibling}, {child_name[0]})")
-        except Exception:
-            continue
+        for child in child_name:
+            try:
+                if list(prolog_file.query(f"male({sibling})")):
+                    uncle_aunt_facts.append(f"uncle({sibling}, {child})")
+                elif list(prolog_file.query(f"female({sibling})")):
+                    uncle_aunt_facts.append(f"aunt({sibling}, {child})")
+            except Exception:
+                continue
             
     
     for sibling in sibling_list:
         for parent in parents_of_new_child:
-            if sibling == parent:
-                continue
-            else:
-                try:
-                    if list(prolog_file.query(f"brother({parent}, {sibling})")) or list(prolog_file.query(f"brother({sibling}, {parent})")):
-                        uncle_aunt_facts.append(f"uncle({sibling}, {child_name[0]})")
-                    elif list(prolog_file.query(f"sister({parent}, {sibling})")) or list(prolog_file.query(f"sister({sibling}, {parent})")):
-                        uncle_aunt_facts.append(f"aunt({sibling}, {child_name[0]})")
-                except Exception:
+            for child in child_name:
+                if sibling == parent:
                     continue
-
-
-    for sibling in sibling_list:
-        for pair in parent_child_pair:
-            for name in list_of_names:
-                if sibling == name:
-                    continue
-                elif name == pair[0]:
-                    if f"brother({name}, {sibling})" or f"brother({sibling}, {name})" in return_query:
-                        uncle_aunt_facts.append(f"uncle({sibling}, {pair[1]})")
-                    elif f"sister({name}, {sibling})" or f"sister({sibling}, {name})" in return_query:
-                        uncle_aunt_facts.append(f"aunt({sibling}, {pair[1]})")
                 else:
-                    continue
+                    try:
+                        if list(prolog_file.query(f"brother({parent}, {sibling})")) or list(prolog_file.query(f"brother({sibling}, {parent})")):
+                            uncle_aunt_facts.append(f"uncle({sibling}, {child})")
+                        elif list(prolog_file.query(f"sister({parent}, {sibling})")) or list(prolog_file.query(f"sister({sibling}, {parent})")):
+                            uncle_aunt_facts.append(f"aunt({sibling}, {child})")
+                    except Exception:
+                        continue
+
+
 
 
 
     uncle_aunt_facts = list({tuple(pair): pair for pair in uncle_aunt_facts}.values())
 
-    print("UNCLE AND AUNT LIST")
-    print(uncle_aunt_facts)
+
 
     return uncle_aunt_facts
 
