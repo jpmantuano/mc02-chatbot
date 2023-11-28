@@ -125,3 +125,44 @@ niece(X, Y) :-
     female(X),
     X \= Y,
     \+relationship_exists(niece, X, Y).
+
+
+
+
+% Updated relative rule
+relative(X, Y) :-
+    parent(X, Y).
+relative(X, Y) :-
+    parent(Y, X).
+relative(X, Y) :-
+    sibling(X, Y).
+relative(X, Y) :-
+    sibling(Y, X).
+relative(X, Y) :-
+    aunt(X, Y).
+relative(X, Y) :-
+    aunt(Y, X).
+relative(X, Y) :-
+    uncle(X, Y).
+relative(X, Y) :-
+    uncle(Y, X).
+relative(X, Y) :-
+    cousin(X, Y).
+relative(X, Y) :-
+    cousin(Y, X).
+relative(X, Y) :-
+    nephew(X, Y).
+relative(X, Y) :-
+    nephew(Y, X).
+relative(X, Y) :-
+    niece(X, Y).
+relative(X, Y) :-
+    niece(Y, X).
+relative(X, Y) :-
+    grandparent(X, Y).
+relative(X, Y) :-
+    grandparent(Y, X).
+relative(X, Y) :-
+    partner(X, Y).
+relative(X, Y) :-
+    partner(Y, X).
