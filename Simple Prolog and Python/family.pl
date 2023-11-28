@@ -14,6 +14,7 @@
 :- dynamic son/2.
 :- dynamic aunt/2.
 :- dynamic uncle/2.
+:- dynamic relative/2.
 
 :- dynamic male/1.
 :- dynamic female/1.
